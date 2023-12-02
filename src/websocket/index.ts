@@ -25,7 +25,7 @@ const setupWebSocket = (server: HttpServer) => {
       if (room) {
         console.log("ROOM JOINED =>", room)
         socket.join(roomId)
-        socket.emit("room-joined", room)
+        io.to(roomId).emit("room-joined", room) // Broadcast to all in the room
       } else {
         socket.emit("room-not-found")
       }
@@ -36,7 +36,7 @@ const setupWebSocket = (server: HttpServer) => {
 
       if (room) {
         socket.leave(roomId)
-        socket.emit("room-left")
+        io.to(roomId).emit("room-left", room)
       } else {
         socket.emit("room-not-found")
       }
