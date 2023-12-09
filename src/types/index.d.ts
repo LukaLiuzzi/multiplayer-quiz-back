@@ -14,11 +14,13 @@ export interface Room {
 export interface Answer {
   text: string
   isCorrect: boolean
+  id: string
 }
 
 export interface Question {
   question: string
   answers: Answer[]
+  id: string
 }
 
 export interface AnsweredQuestion {
