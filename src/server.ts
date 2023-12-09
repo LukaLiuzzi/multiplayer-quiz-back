@@ -7,6 +7,6 @@ const server = createServer(app)
 
 setupWebSocket(server)
 
-server.listen(8080, () => {
-  console.log("listening on *:8080")
+server.listen(process.env.PORT, () => {
+  console.log(`Server is running on port ${process.env.PORT}`)
 })
