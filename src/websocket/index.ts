@@ -3,10 +3,12 @@ import {
   createRoom,
   joinRoom,
   leaveRoom,
+  saveAnswers,
   saveQuestions,
   startGame,
 } from "../game"
 import { Server as HttpServer } from "http"
+import { AnsweredQuestion, Question } from "../types"
 
 const setupWebSocket = (server: HttpServer) => {
   const io = new Server(server, {
@@ -21,14 +23,14 @@ const setupWebSocket = (server: HttpServer) => {
   io.on("connection", (socket) => {
     console.log("USUARIO CONECTADO =>", socket.id)
 
-    socket.on("create-room", (userId) => {
+    socket.on("create-room", (userId: string) => {
       const room = createRoom(userId)
       socket.join(room.id)
       console.log("ROOM CREADA =>", room)
       socket.emit("room-created", room)
     })
 
-    socket.on("join-room", (roomId, userId) => {
+    socket.on("join-room", (roomId: string, userId: string) => {
       const room = joinRoom(roomId, userId)
 
       if (room) {
@@ -40,7 +42,7 @@ const setupWebSocket = (server: HttpServer) => {
       }
     })
 
-    socket.on("leave-room", (userId, roomId) => {
+    socket.on("leave-room", (userId: string, roomId: string) => {
       const room = leaveRoom(roomId, userId)
 
       if (room) {
@@ -51,7 +53,7 @@ const setupWebSocket = (server: HttpServer) => {
       }
     })
 
-    socket.on("start-game", (roomId) => {
+    socket.on("start-game", (roomId: string) => {
       const room = startGame(roomId)
 
       if (room) {
@@ -61,15 +63,37 @@ const setupWebSocket = (server: HttpServer) => {
       }
     })
 
-    socket.on("send-questions", ({ questions, roomId }) => {
-      const room = saveQuestions(questions, roomId, socket.id)
+    socket.on(
+      "send-questions",
+      ({ questions, roomId }: { questions: Question[]; roomId: string }) => {
+        const room = saveQuestions(questions, roomId, socket.id)
 
-      if (room) {
-        io.to(roomId).emit("questions-sent", room)
-      } else {
-        socket.emit("room-error")
+        if (room) {
+          io.to(roomId).emit("questions-sent", room)
+        } else {
+          socket.emit("room-error")
+        }
       }
-    })
+    )
+
+    socket.on(
+      "send-answers",
+      ({
+        answeredQuestions,
+        roomId,
+      }: {
+        answeredQuestions: AnsweredQuestion[]
+        roomId: string
+      }) => {
+        const room = saveAnswers(answeredQuestions, roomId, socket.id)
+
+        if (room) {
+          io.to(roomId).emit("answers-sent", room)
+        } else {
+          socket.emit("room-error")
+        }
+      }
+    )
   })
 }
 

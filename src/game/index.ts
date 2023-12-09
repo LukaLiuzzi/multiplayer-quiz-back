@@ -1,4 +1,4 @@
-import { Room, Player, Question } from "../types"
+import { Room, Player, Question, AnsweredQuestion } from "../types"
 
 const rooms: Room[] = []
 
@@ -14,6 +14,7 @@ export function createRoom(ownerId: string) {
       {
         id: ownerId,
         questions: [],
+        answers: [],
       },
     ],
     state: "waiting",
@@ -34,6 +35,7 @@ export function joinRoom(roomId: string, userId: string) {
   room.players.push({
     id: userId,
     questions: [],
+    answers: [],
   })
 
   return room
@@ -99,6 +101,35 @@ export function saveQuestions(
     room.players[1].questions.length > 0
   ) {
     room.state = "answer"
+  }
+
+  return room
+}
+
+export function saveAnswers(
+  answeredQuestions: AnsweredQuestion[],
+  roomId: string,
+  playerId: string
+) {
+  const room = rooms.find((room) => room.id === roomId)
+
+  if (!room) {
+    return null
+  }
+
+  const player = room.players.find((player) => player.id === playerId)
+
+  if (!player) {
+    return null
+  }
+
+  player.answers = answeredQuestions
+
+  if (
+    room.players[0].answers.length > 0 &&
+    room.players[1].answers.length > 0
+  ) {
+    room.state = "score"
   }
 
   return room
