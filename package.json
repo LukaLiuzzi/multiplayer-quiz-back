@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "multiplayer-quiz-back",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
