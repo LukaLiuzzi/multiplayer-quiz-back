@@ -1,11 +1,20 @@
 import { Server } from "socket.io"
-import { createRoom, joinRoom, leaveRoom } from "../game"
+import {
+  createRoom,
+  joinRoom,
+  leaveRoom,
+  saveQuestions,
+  startGame,
+} from "../game"
 import { Server as HttpServer } from "http"
 
 const setupWebSocket = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {
       origin: "*",
+    },
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 15000,
     },
   })
 
@@ -39,6 +48,26 @@ const setupWebSocket = (server: HttpServer) => {
         io.to(roomId).emit("room-left", room)
       } else {
         socket.emit("room-not-found")
+      }
+    })
+
+    socket.on("start-game", (roomId) => {
+      const room = startGame(roomId)
+
+      if (room) {
+        io.to(roomId).emit("game-started", room)
+      } else {
+        socket.emit("room-error")
+      }
+    })
+
+    socket.on("send-questions", ({ questions, roomId }) => {
+      const room = saveQuestions(questions, roomId, socket.id)
+
+      if (room) {
+        io.to(roomId).emit("questions-sent", room)
+      } else {
+        socket.emit("room-error")
       }
     })
   })
