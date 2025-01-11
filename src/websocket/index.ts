@@ -18,6 +18,7 @@ const setupWebSocket = (server: HttpServer) => {
       credentials: true,
     },
     path: "/socket.io",
+    transports: ["websocket"],
     connectionStateRecovery: {
       maxDisconnectionDuration: 15000,
     },
