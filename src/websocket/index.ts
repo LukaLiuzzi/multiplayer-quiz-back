@@ -13,7 +13,9 @@ import { AnsweredQuestion, Question } from "../types"
 const setupWebSocket = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: "https://multiplayer-quiz-front.vercel.app",
+      methods: ["GET", "POST"],
+      credentials: true,
     },
     connectionStateRecovery: {
       maxDisconnectionDuration: 15000,
