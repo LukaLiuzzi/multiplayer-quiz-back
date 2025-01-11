@@ -24,7 +24,9 @@ const setupWebSocket = (server: HttpServer) => {
     },
   })
 
-  io.on("connection", (socket) => {
+  const nsp = io.of("/multiplayer-quiz-back") // Namespace for the multiplayer quiz
+
+  nsp.on("connection", (socket) => {
     console.log("USUARIO CONECTADO =>", socket.id)
 
     socket.on("create-room", (userId: string) => {
