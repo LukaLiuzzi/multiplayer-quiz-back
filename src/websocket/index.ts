@@ -17,6 +17,7 @@ const setupWebSocket = (server: HttpServer) => {
       methods: ["GET", "POST"],
       credentials: true,
     },
+    path: "/multiplayer-quiz-back/socket.io",
     connectionStateRecovery: {
       maxDisconnectionDuration: 15000,
     },
